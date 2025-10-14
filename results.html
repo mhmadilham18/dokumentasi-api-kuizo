@@ -1,0 +1,118 @@
+<h1>Result Service</h1>
+<p>
+  Endpoint ini digunakan untuk menampilkan laporan hasil ujian siswa. Dapat
+  diakses oleh siswa untuk melihat hasilnya sendiri, atau oleh guru/admin untuk
+  memantau hasil semua siswa di room mereka.
+</p>
+
+<h2>Student Reports</h2>
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-get">GET</span>
+    <span class="endpoint-path">/student-reports/{room_id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Laporan Hasil Ujian</h3>
+    <p>
+      Mengambil laporan detail hasil ujian di room tertentu. Respons yang
+      diberikan akan berbeda tergantung pada peran (<code>role</code>) pengguna
+      yang melakukan permintaan.
+    </p>
+    <div class="auth-badge">
+      Authorization:
+      <span class="auth-required">Bearer Token (Siswa/Guru/Admin)</span>
+    </div>
+
+    <h3>Success Response (Role: Siswa) <code>200 OK</code></h3>
+    <p>
+      Jika diakses oleh siswa, API akan mengembalikan laporan detail untuk siswa
+      tersebut, termasuk riwayat jawaban, analisis performa, dan identitas.
+    </p>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "summary": {
+            "total_questions": 19,
+            "total_correct": 7,
+            "true_score": 37,
+            "expectation_score": 103,
+            "total_time_seconds": 39,
+            "avg_time_per_question": 2.05,
+            "finished_at": "2025-10-14T04:06:23.228Z"
+        },
+        "identity": {
+            "student_id": "cd45ee25-6be7-4006-ab69-00e27fc593d5",
+            "nama": "Kartika Agus",
+            "username": "siswaeejkkvvhjbe",
+            "nomer_induk": "jfyff"
+        },
+        "history": [
+            {
+                "question": "Pemanfaatan mikroorganisme...",
+                "topic": "Bioteknologi",
+                "correct_answer": "A",
+                "student_answer": "A",
+                "is_correct": true,
+                "time_taken_seconds": 2
+            }
+        ],
+        "top_slowest": [
+            {
+                "question": "Hormon tumbuhan...",
+                "topic": "Pertumbuhan dan Perkembangan",
+                "time": 3
+            }
+        ],
+        "level_performance": [
+            { "level": 1, "total": 13, "correct": 5, "percent": "38.46" },
+            { "level": 2, "total": 4, "correct": 2, "percent": "50.00" },
+            { "level": 3, "total": 2, "correct": 0, "percent": "0.00" }
+        ]
+    }
+}</code></pre>
+
+    <h3 style="margin-top: 2rem">
+      Success Response (Role: Guru/Admin) <code>200 OK</code>
+    </h3>
+    <p>
+      Jika diakses oleh guru/admin, API akan mengembalikan rangkuman (rata-rata)
+      untuk seluruh room dan daftar detail laporan untuk setiap siswa yang
+      berpartisipasi.
+    </p>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "summary": {
+            "avg_total_questions": "10.00",
+            "avg_total_correct": "4.50",
+            "avg_true_score": "22.50",
+            "avg_total_time_seconds": "20.00"
+        },
+        "students": [
+            {
+                "student_id": "89f35429-ffc9-4895-bfde-744db80a775b",
+                "summary": {
+                    "total_questions": 18,
+                    "total_correct": 7,
+                    "true_score": 37,
+                    "finished_at": "2025-10-14T04:06:23.228Z"
+                },
+                "identity": {
+                    "nama": "Kartika Rina",
+                    "nomer_induk": "SISWA002"
+                },
+                "history": [ /* ...detail jawaban... */ ],
+                "level_performance": [ /* ...detail performa... */ ]
+            },
+            {
+                "student_id": "cd45ee25-6be7-4006-ab69-00e27fc593d5",
+                "summary": { /* ...summary siswa lain... */ },
+                "identity": { /* ...identitas siswa lain... */ },
+                "history": [ /* ...jawaban siswa lain... */ ],
+                "level_performance": [ /* ...performa siswa lain... */ ]
+            }
+        ]
+    }
+}</code></pre>
+  </div>
+</div>

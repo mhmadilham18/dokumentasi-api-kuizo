@@ -1,0 +1,235 @@
+<h1>Exam Flow Service</h1>
+<p>
+  Endpoint-endpoint ini khusus digunakan oleh <strong>Siswa</strong> untuk
+  menjalani proses ujian, mulai dari memulai, menjawab soal, hingga
+  menyelesaikan ujian.
+</p>
+
+<h2>Exam Process</h2>
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/exam/start</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Mulai Ujian</h3>
+    <p>
+      Memulai sesi ujian di sebuah room dan mengambil soal pertama. Hanya bisa
+      dilakukan jika room berstatus 'mulai_ujian'.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>room_id</code></td>
+          <td>integer</td>
+          <td>
+            ID room tempat ujian akan dimulai.
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "done": false,
+        "question": {
+            "id": 105,
+            "topic_id": 2,
+            "question_text": "Sebuah benda jatuh dari ketinggian 10m. Berapa kecepatannya saat menyentuh tanah?",
+            "image_url": null,
+            "option_a": "10 m/s",
+            "option_b": "14 m/s",
+            "option_c": "20 m/s",
+            "option_d": "5 m/s",
+            "option_e": "24 m/s",
+            "difficulty_level": 2
+        }
+    }
+}</code></pre>
+    <p>
+      Jika tidak ada soal yang tersedia, respons akan berisi `done: true` dan
+      sebuah pesan.
+    </p>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/exam/next</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Jawab & Ambil Soal Berikutnya</h3>
+    <p>
+      Mengirimkan jawaban untuk soal saat ini dan meminta soal berikutnya.
+      Sistem akan menentukan soal selanjutnya berdasarkan mekanisme asesmen
+      room.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>room_id</code></td>
+          <td>integer</td>
+          <td>ID room ujian. <span class="required">Wajib.</span></td>
+        </tr>
+        <tr>
+          <td><code>question_id</code></td>
+          <td>integer</td>
+          <td>
+            ID soal yang baru saja dijawab. <span class="required">Wajib.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>answer</code></td>
+          <td>string</td>
+          <td>
+            Pilihan jawaban siswa ("A", "B", "C", "D", atau "E").
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>time_taken_seconds</code></td>
+          <td>integer</td>
+          <td>
+            Waktu yang dihabiskan untuk menjawab soal (dalam detik).
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response (Next Question) <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "done": false,
+        "question": {
+            "id": 108,
+            "question_text": "Pertanyaan berikutnya...",
+            "option_a": "...",
+            "option_b": "...",
+            "option_c": "...",
+            "option_d": "...",
+            "option_e": "..."
+        }
+    }
+}</code></pre>
+    <h3>Success Response (Exam Finished) <code>200 OK</code></h3>
+    <p>
+      Jika ujian selesai (semua soal terjawab), respons akan berisi `done: true`
+      dan skor akhir.
+    </p>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "done": true,
+        "scores": {
+            "total_questions_answered": 50,
+            "total_correct": 40,
+            "expectation_score": null,
+            "true_score": 80.0,
+            "total_time_seconds": 1800,
+            "avg_time_per_question": 36
+        }
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/exam/finish</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Selesaikan Ujian (Manual)</h3>
+    <p>
+      Siswa menyelesaikan ujian secara manual sebelum semua soal terjawab. Skor
+      akan dihitung berdasarkan jawaban yang sudah masuk.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>room_id</code></td>
+          <td>integer</td>
+          <td>
+            ID room yang ujiannya akan diselesaikan.
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "total_questions_answered": 30,
+        "total_correct": 25,
+        "expectation_score": null,
+        "true_score": 83.33,
+        "total_time_seconds": 1200,
+        "avg_time_per_question": 40
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-get">GET</span>
+    <span class="endpoint-path">/exam/result/{room_id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Lihat Hasil Ujian</h3>
+    <p>Siswa melihat kembali hasil ujian yang telah diselesaikan.</p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "total_questions_answered": 50,
+        "total_correct": 40,
+        "expectation_score": null,
+        "true_score": 80.0,
+        "total_time_seconds": 1800,
+        "avg_time_per_question": 36
+    }
+}</code></pre>
+  </div>
+</div>

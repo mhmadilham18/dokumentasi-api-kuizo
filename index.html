@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dokumentasi API - Ujian Adaptif</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="mobile-header">
+      <div class="sidebar-header">API Kuizo</div>
+      <button id="menuToggleBtn" class="menu-toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </header>
+
+    <div class="docs-container">
+      <aside class="sidebar">
+        <div class="sidebar-header desktop-only">API Kuizo App</div>
+        <nav id="sidebarNav">
+          <ul>
+            <li>
+              <a href="#auth" data-page="auth.html" class="nav-link"
+                >Authentication</a
+              >
+            </li>
+            <li>
+              <a href="#questions" data-page="questions.html" class="nav-link"
+                >Questions & Topics</a
+              >
+            </li>
+            <li>
+              <a href="#rooms" data-page="rooms.html" class="nav-link">Rooms</a>
+            </li>
+            <li>
+              <a href="#exam" data-page="exam.html" class="nav-link">
+                Exam Flow</a
+              >
+            </li>
+            <li>
+              <a href="#results" data-page="results.html" class="nav-link"
+                >Results & Reports</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main id="mainContent" class="main-content">
+        <div class="spinner-wrapper"><div class="spinner"></div></div>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

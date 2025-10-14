@@ -1,0 +1,203 @@
+<h1>Authentication Service</h1>
+<p>
+  Endpoint-endpoint ini menangani semua hal yang berkaitan dengan registrasi dan
+  login untuk semua jenis pengguna (Admin, Guru, Siswa).
+</p>
+
+<h2>User & Admin Authentication</h2>
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/register-admin</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Registrasi Admin</h3>
+    <p>
+      Mendaftarkan akun <strong>admin</strong> utama. Endpoint ini idealnya
+      hanya dapat digunakan satu kali saat sistem pertama kali di-setup.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-none">None</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>username</code></td>
+          <td>string</td>
+          <td>
+            Nama pengguna unik. <span class="required">Wajib, min 3.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>full_name</code></td>
+          <td>string</td>
+          <td>Nama lengkap. <span class="required">Wajib, min 3.</span></td>
+        </tr>
+        <tr>
+          <td><code>email</code></td>
+          <td>string</td>
+          <td>Alamat email yang valid. <span class="required">Wajib.</span></td>
+        </tr>
+        <tr>
+          <td><code>nomer_induk</code></td>
+          <td>string</td>
+          <td>
+            Nomor Induk Pegawai (NIP).
+            <span class="required">Wajib, min 5.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>password</code></td>
+          <td>string</td>
+          <td>
+            Password untuk akun. <span class="required">Wajib, min 6.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>201 Created</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Admin berhasil terdaftar",
+    "data": {
+        "id": "b20542c9-4386-4636-b906-863f36cbc7dd",
+        "email": "admin@sekolah.sch.id"
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/register-user</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Registrasi User (oleh Admin)</h3>
+    <p>
+      Admin mendaftarkan akun baru untuk <strong>guru</strong> atau
+      <strong>siswa</strong>.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Admin)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>username</code></td>
+          <td>string</td>
+          <td>
+            Nama pengguna unik. <span class="required">Wajib, min 3.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>full_name</code></td>
+          <td>string</td>
+          <td>Nama lengkap. <span class="required">Wajib, min 3.</span></td>
+        </tr>
+        <tr>
+          <td><code>email</code></td>
+          <td>string</td>
+          <td>Alamat email yang valid. <span class="required">Wajib.</span></td>
+        </tr>
+        <tr>
+          <td><code>nomer_induk</code></td>
+          <td>string</td>
+          <td>
+            Nomor Induk Pegawai/Siswa (NIP/NIS).
+            <span class="required">Wajib, min 5.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>password</code></td>
+          <td>string</td>
+          <td>
+            Password untuk akun. <span class="required">Wajib, min 6.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>role</code></td>
+          <td>string</td>
+          <td>
+            Peran pengguna. Pilihan: <code>"guru"</code> atau
+            <code>"siswa"</code>. <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>201 Created</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Akun guru berhasil terdaftar",
+    "data": {
+        "id": "a1b2c3d4-e5f6-1234-abcd-567890abcdef",
+        "email": "guru.baru@sekolah.sch.id",
+        "role": "guru"
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/login</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Login Pengguna</h3>
+    <p>
+      Mengautentikasi semua jenis pengguna (admin, guru, siswa) dan
+      mengembalikan access token.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-none">None</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>email</code></td>
+          <td>string</td>
+          <td>Alamat email terdaftar. <span class="required">Wajib.</span></td>
+        </tr>
+        <tr>
+          <td><code>password</code></td>
+          <td>string</td>
+          <td>Password pengguna. <span class="required">Wajib.</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Login berhasil",
+    "data": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Iiwicm9sZSI6Imd1cnUifQ.abcdef",
+        "role": "guru"
+    }
+}</code></pre>
+  </div>
+</div>

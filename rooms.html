@@ -1,0 +1,390 @@
+<h1>Room Service</h1>
+<p>
+  Endpoint-endpoint ini digunakan untuk mengelola ruang ujian (room). Guru/Admin
+  dapat membuat dan mengelola room, sementara Siswa dapat bergabung dan melihat
+  room yang mereka ikuti.
+</p>
+
+<h2>Room Management (Guru/Admin)</h2>
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/rooms</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Buat Room Ujian Baru</h3>
+    <p>
+      Guru atau Admin membuat sebuah ruang ujian baru. Sebuah
+      <code>keypass</code> unik 8 digit akan otomatis digenerate.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>name</code></td>
+          <td>string</td>
+          <td>
+            Nama/judul ruang ujian. <span class="required">Wajib, min 3.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>question_count</code></td>
+          <td>integer</td>
+          <td>
+            Jumlah soal dalam ujian.
+            <span class="required">Wajib, min 1.</span>
+          </td>
+        </tr>
+        <tr>
+          <td><code>assessment_mechanism</code></td>
+          <td>string</td>
+          <td>
+            Mekanisme asesmen. Pilihan: <code>static</code>,
+            <code>random</code>, <code>adaptive_fixed_length</code>,
+            <code>adaptive_variable_length</code>.
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>201 Created</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Room berhasil dibuat",
+    "data": {
+        "id": 1,
+        "name": "Ujian Tengah Semester Matematika",
+        "keypass": "AB12CD34",
+        "status": "persiapan",
+        "assessment_mechanism": "random",
+        "question_count": 50,
+        "created_by": "b20542c9-4386-4636-b906-863f36cbc7dd",
+        "created_at": "2025-10-14T10:00:00.000Z"
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-get">GET</span>
+    <span class="endpoint-path">/rooms</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Daftar Room (Milik Saya)</h3>
+    <p>
+      Mengambil daftar semua room yang telah dibuat oleh Guru/Admin yang sedang
+      login.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Query Parameters</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>q</code></td>
+          <td>string</td>
+          <td>Teks pencarian untuk nama room. Opsional.</td>
+        </tr>
+        <tr>
+          <td><code>status</code></td>
+          <td>string</td>
+          <td>
+            Filter berdasarkan status. Pilihan: <code>persiapan</code>,
+            <code>mulai_ujian</code>, <code>ujian_berakhir</code>. Opsional.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": [
+        {
+            "id": 1,
+            "name": "Ujian Tengah Semester Matematika",
+            "keypass": "AB12CD34",
+            "status": "persiapan",
+            "assessment_mechanism": "random",
+            "question_count": 50,
+            "created_at": "2025-10-14T10:00:00.000Z"
+        }
+    ],
+    "meta": { "total": 1 }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-get">GET</span>
+    <span class="endpoint-path">/rooms/{id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Detail Room</h3>
+    <p>
+      Mengambil detail sebuah room, termasuk daftar peserta (siswa) yang telah
+      bergabung.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "name": "Ujian Tengah Semester Matematika",
+        "keypass": "AB12CD34",
+        "status": "persiapan",
+        "assessment_mechanism": "random",
+        "question_count": 50,
+        "created_by": "b20542c9-4386-4636-b906-863f36cbc7dd",
+        "created_at": "2025-10-14T10:00:00.000Z",
+        "participants": [
+            {
+                "student_id": "c3d4e5f6-a7b8-1234-abcd-567890abcdef",
+                "join_timestamp": "2025-10-14T11:00:00.000Z",
+                "profiles": {
+                    "id": "c3d4e5f6-a7b8-1234-abcd-567890abcdef",
+                    "username": "budi_siswa",
+                    "full_name": "Budi Hartono",
+                    "email": "budi.h@sekolah.sch.id",
+                    "nomer_induk": "102030"
+                }
+            }
+        ]
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-patch">PATCH</span>
+    <span class="endpoint-path">/rooms/{id}/status</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Ubah Status Room</h3>
+    <p>
+      Mengubah status sebuah room, misalnya dari 'persiapan' menjadi
+      'mulai_ujian'.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>status</code></td>
+          <td>string</td>
+          <td>
+            Status baru. Pilihan: <code>persiapan</code>,
+            <code>mulai_ujian</code>, <code>ujian_berakhir</code>.
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Status room diperbarui",
+    "data": {
+        "id": 1,
+        "name": "Ujian Tengah Semester Matematika",
+        "keypass": "AB12CD34",
+        "status": "mulai_ujian",
+        "assessment_mechanism": "random",
+        "question_count": 50,
+        "created_at": "2025-10-14T10:00:00.000Z"
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/rooms/{id}/generate-static</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Generate Soal untuk Room Statis</h3>
+    <p>
+      Mengisi room dengan mekanisme <code>static</code> dengan set soal yang
+      diambil secara acak dari bank soal. Endpoint ini akan menghapus set soal
+      lama jika ada dan menggantinya dengan yang baru.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Success Response <code>201 Created</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Berhasil membuat set soal static (50 soal)",
+    "data": {
+        "room_id": 1,
+        "total_inserted": 50
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-delete">DELETE</span>
+    <span class="endpoint-path">/rooms/{id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Hapus Room</h3>
+    <p>Menghapus room secara permanen.</p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Room berhasil dihapus"
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-delete">DELETE</span>
+    <span class="endpoint-path">/rooms/{id}/participants/{student_id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Keluarkan Peserta dari Room</h3>
+    <p>Menghapus (kick) seorang siswa dari daftar peserta room.</p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Guru/Admin)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Peserta berhasil dihapus dari room"
+}</code></pre>
+  </div>
+</div>
+
+<h2>Room Participation (Siswa)</h2>
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-post">POST</span>
+    <span class="endpoint-path">/rooms/join</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Gabung ke Room</h3>
+    <p>
+      Siswa bergabung ke sebuah room menggunakan <code>keypass</code> yang
+      diberikan oleh guru. Hanya bisa dilakukan jika room berstatus
+      'persiapan'.
+    </p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Request Body <code>application/json</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Tipe</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>keypass</code></td>
+          <td>string</td>
+          <td>
+            Kode 8 digit alfanumerik untuk masuk room.
+            <span class="required">Wajib.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Success Response <code>201 Created</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Berhasil bergabung ke room",
+    "data": {
+        "room_id": 1
+    }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-get">GET</span>
+    <span class="endpoint-path">/rooms/my</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Daftar Room Saya (Siswa)</h3>
+    <p>Mengambil daftar semua room yang diikuti oleh siswa yang sedang login.</p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "data": [
+        {
+            "id": 1,
+            "name": "Ujian Tengah Semester Matematika",
+            "keypass": "AB12CD34",
+            "status": "persiapan",
+            "assessment_mechanism": "random",
+            "question_count": 50,
+            "created_at": "2025-10-14T10:00:00.000Z"
+        }
+    ]
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint-card">
+  <div class="endpoint-header">
+    <span class="endpoint-method method-delete">DELETE</span>
+    <span class="endpoint-path">/rooms/leave/{room_id}</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Keluar dari Room</h3>
+    <p>Siswa meninggalkan (keluar) dari sebuah room.</p>
+    <div class="auth-badge">
+      Authorization: <span class="auth-required">Bearer Token (Siswa)</span>
+    </div>
+    <h3>Success Response <code>200 OK</code></h3>
+    <pre><code>{
+    "status": "success",
+    "message": "Berhasil keluar dari room"
+}</code></pre>
+  </div>
+</div>
